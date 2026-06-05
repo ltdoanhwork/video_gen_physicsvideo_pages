@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video World Model - Inference Acceleration Benchmark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg-primary:#ffffff;
+--bg-secondary:#f8f9fa;
+--bg-card:#ffffff;
+--bg-card-hover:#f1f3f5;
+--border:#e2e5e9;
+--border-accent:#c9cdd3;
+--text-primary:#1a1a2e;
+--text-secondary:#4a4a68;
+--text-muted:#7a7a96;
+--accent:#4f46e5;
+--accent-light:#6366f1;
+--accent-glow:rgba(79,70,229,0.08);
+--green:#059669;
+--orange:#d97706;
+--red:#dc2626;
+--cyan:#0891b2;
+--pink:#db2777;
+--radius:12px;
+--radius-lg:16px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--text-primary);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-light)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1rem 2rem;backdrop-filter:blur(20px);background:rgba(255,255,255,0.92);border-bottom:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+nav .nav-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+nav .logo{font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:.5rem;color:var(--text-primary)}
+nav .logo span{background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav .nav-links{display:flex;gap:1.5rem}
+nav .nav-links a{color:var(--text-secondary);font-size:.9rem;font-weight:500;padding:.4rem .75rem;border-radius:6px;transition:all .2s}
+nav .nav-links a:hover{color:var(--text-primary);background:rgba(0,0,0,.04)}
+
+.hero{min-height:90vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 2rem 4rem;position:relative}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:900px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 65%);pointer-events:none}
+.hero h1{font-size:clamp(2.8rem,5vw,4.2rem);font-weight:800;line-height:1.1;margin-bottom:1.5rem;color:var(--text-primary)}
+.hero .subtitle{font-size:1.25rem;color:var(--text-secondary);max-width:700px;margin:0 auto 1.5rem;line-height:1.7}
+.hero .meta{font-size:1rem;color:var(--text-muted);margin-bottom:2rem}
+.hero .meta strong{color:var(--text-primary)}
+
+.badges{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem 1rem;border-radius:999px;font-size:.85rem;font-weight:600;border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-secondary);cursor:pointer;transition:all .2s}
+.badge:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
+
+section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:3rem}
+.section-header h2{font-size:2.2rem;font-weight:700;margin-bottom:.5rem;color:var(--text-primary)}
+.section-header p{color:var(--text-secondary);max-width:650px;margin:0 auto;font-size:1.1rem}
+.divider{width:50px;height:3px;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:2px;margin:.75rem auto}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.25rem;margin:2.5rem 0}
+.stat-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;transition:all .25s}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 12px rgba(79,70,229,0.08)}
+.stat-card .value{font-size:2rem;font-weight:700;margin-bottom:.25rem}
+.stat-card .label{font-size:.9rem;color:var(--text-muted)}
+
+/* Comparison Section */
+.comparison-block{margin-bottom:2.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+.comparison-header{padding:1.25rem 1.75rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;background:var(--bg-secondary)}
+.comparison-header h3{font-size:1.15rem;font-weight:600;color:var(--text-primary)}
+.comparison-header .task-label{font-size:.85rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+.comparison-header .ep-tag{padding:.3rem .7rem;border-radius:6px;font-size:.75rem;font-weight:600;background:rgba(79,70,229,0.08);color:var(--accent)}
+
+.comparison-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0}
+.comparison-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:0}
+.comparison-cell:last-child{border-right:none}
+.comparison-cell video{width:100%;aspect-ratio:16/10;object-fit:contain;background:#0a0a0f;display:block}
+.comparison-cell .cell-info{padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between}
+.comparison-cell .method-name{font-size:.9rem;font-weight:600;display:flex;align-items:center;gap:.5rem;color:var(--text-primary)}
+.comparison-cell .method-dot{width:10px;height:10px;border-radius:50%}
+.comparison-cell .metrics{font-size:.8rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+.comparison-cell .metrics span{margin-left:.5rem}
+
+/* Method Legend */
+.method-legend{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem;padding:1.25rem;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--radius)}
+.legend-item{display:flex;align-items:center;gap:.5rem;font-size:.9rem;font-weight:500;color:var(--text-secondary)}
+.legend-dot{width:12px;height:12px;border-radius:50%}
+
+/* Tabs */
+.tabs{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:2rem}
+.tab{padding:.5rem 1rem;border-radius:8px;font-size:.8rem;font-weight:500;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text-secondary);transition:all .2s}
+.tab:hover{border-color:var(--border-accent);color:var(--text-primary)}
+.tab.active{background:var(--accent);border-color:var(--accent);color:white}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* Acceleration table */
+.accel-table{width:100%;border-collapse:collapse;margin:2rem 0;background:var(--bg-card);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.accel-table th,.accel-table td{padding:.85rem 1.25rem;text-align:left;font-size:.9rem}
+.accel-table th{color:var(--text-muted);font-weight:600;text-transform:uppercase;font-size:.75rem;letter-spacing:.05em;background:var(--bg-secondary);border-bottom:1px solid var(--border)}
+.accel-table td{color:var(--text-secondary);border-bottom:1px solid var(--border)}
+.accel-table tr:last-child td{border-bottom:none}
+.accel-table tr:hover td{background:var(--bg-secondary)}
+.accel-table .speed{color:var(--green);font-weight:700;font-size:1rem}
+.accel-table .category{font-family:'JetBrains Mono',monospace;font-size:.8rem;padding:.2rem .5rem;border-radius:4px;background:var(--bg-secondary);border:1px solid var(--border)}
+
+footer{padding:3rem 2rem;text-align:center;border-top:1px solid var(--border);color:var(--text-muted);font-size:.9rem}
+
+@media(max-width:768px){
+.comparison-grid{grid-template-columns:1fr}
+nav .nav-links{display:none}
+.stats{grid-template-columns:1fr 1fr}
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<nav>
+<div class="nav-inner">
+<div class="logo"><span>VideoWorld</span>&nbsp;Acceleration Benchmark</div>
+<div class="nav-links">
+<a href="#overview">Overview</a>
+<a href="#methods">Methods</a>
+<a href="#single-arm">Single-Arm</a>
+<a href="#humanoid">Humanoid</a>
+<a href="#bimanual">Bimanual</a>
+</div>
+</div>
+</nav>
+
+<header class="hero">
+<div>
+<h1>Inference Acceleration for<br>Video World Models</h1>
+<p class="subtitle">Benchmarking training-free acceleration strategies (Cache, Sparse Attention, Token Merging) across CtrlWorld and DreamDojo on robotic manipulation tasks.</p>
+<p class="meta"><strong>Le Thien Doanh</strong> &middot; CAIR Program &middot; PI: Dr. Nguyen Ho Minh Duy</p>
+<div class="badges">
+<a class="badge" href="#single-arm">Single-Arm (DROID)</a>
+<a class="badge" href="#humanoid">Humanoid (GR1)</a>
+<a class="badge" href="#bimanual">Bimanual</a>
+<a class="badge" href="#methods">4 Acceleration Methods</a>
+</div>
+</div>
+</header>
+
+<section id="overview">
+<div class="section-header">
+<h2>The Speed-Quality Trade-off</h2>
+<div class="divider"></div>
+<p>Video world models are powerful but computationally expensive. We benchmark training-free methods that accelerate inference while preserving generation quality.</p>
+</div>
+<div class="stats">
+<div class="stat-card"><div class="value" style="color:var(--accent-light)">~2-5 min</div><div class="label">Per episode (50-80 frames)</div></div>
+<div class="stat-card"><div class="value" style="color:var(--green)">1.5-1.7x</div><div class="label">Speedup achieved</div></div>
+<div class="stat-card"><div class="value" style="color:var(--cyan)">4</div><div class="label">Methods compared</div></div>
+<div class="stat-card"><div class="value" style="color:var(--orange)">3</div><div class="label">Robot embodiments</div></div>
+</div>
+</section>
+
+<section id="methods">
+<div class="section-header">
+<h2>Acceleration Methods</h2>
+<div class="divider"></div>
+</div>
+<table class="accel-table">
+<thead><tr><th>Method</th><th>Category</th><th>Speedup</th><th>Mechanism</th><th>Reference</th></tr></thead>
+<tbody>
+<tr><td><strong>Dense (Baseline)</strong></td><td><span class="category">None</span></td><td>1.0x</td><td>Full computation at every denoising step</td><td>-</td></tr>
+<tr><td><strong>WorldCache</strong></td><td><span class="category">Cache</span></td><td class="speed">1.7x</td><td>Content-aware caching with motion-adaptive thresholds</td><td>Umair et al.</td></tr>
+<tr><td><strong>DiCache</strong></td><td><span class="category">Cache</span></td><td class="speed">1.6x</td><td>Diffusion-step aware cache reuse strategy</td><td>Bu et al., ICLR 2026</td></tr>
+<tr><td><strong>FasterCache</strong></td><td><span class="category">Cache</span></td><td class="speed">1.5x</td><td>Lightweight feature caching with minimal overhead</td><td>Lv et al., ICLR 2025</td></tr>
+</tbody>
+</table>
+
+<div class="method-legend">
+<div class="legend-item"><div class="legend-dot" style="background:var(--accent-light)"></div>Dense (Baseline)</div>
+<div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>WorldCache</div>
+<div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>DiCache</div>
+<div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div>FasterCache</div>
+</div>
+</section>
+
+<!-- Single-Arm CtrlWorld Comparison -->
+<section id="single-arm">
+<div class="section-header">
+<h2>Single-Arm (CtrlWorld) Comparison</h2>
+<div class="divider"></div>
+<p>Same episode, same model (CtrlWorld) — comparing Dense baseline vs. accelerated inference methods on DROID dataset.</p>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Put the orange marker inside the white mug</h3>
+<div><span class="ep-tag">episode_000255</span> <span class="task-label">makovian &middot; multiview &middot; 5fps</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dense/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics">PSNR <span>20.72</span> SSIM <span>0.770</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics">PSNR <span>21.40</span> SSIM <span>0.782</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics">PSNR <span>17.49</span> SSIM <span>0.623</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>21.18</span> SSIM <span>0.778</span></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Move the marker to the right</h3>
+<div><span class="ep-tag">episode_000397</span> <span class="task-label">makovian &middot; multiview &middot; 5fps</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dense/single_arm/output/multiview/ctrlworld/makovian/episode_000397/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics">PSNR <span>24.55</span> SSIM <span>0.898</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/single_arm/output/multiview/ctrlworld/makovian/episode_000397/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics">PSNR <span>24.81</span> SSIM <span>0.895</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/single_arm/output/multiview/ctrlworld/makovian/episode_000397/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics">PSNR <span>24.57</span> SSIM <span>0.883</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/single_arm/output/multiview/ctrlworld/makovian/episode_000397/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>24.93</span> SSIM <span>0.901</span></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Put the red block on the yellow block</h3>
+<div><span class="ep-tag">episode_000855</span> <span class="task-label">makovian &middot; multiview &middot; 5fps</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dense/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics">PSNR <span>26.52</span> SSIM <span>0.862</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics">PSNR <span>24.55</span> SSIM <span>0.843</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics">PSNR <span>22.29</span> SSIM <span>0.801</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>26.77</span> SSIM <span>0.866</span></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Turn on the third switch from the left</h3>
+<div><span class="ep-tag">episode_000903</span> <span class="task-label">makovian &middot; multiview &middot; 5fps</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dense/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics">PSNR <span>25.38</span> SSIM <span>0.856</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics">PSNR <span>23.56</span> SSIM <span>0.805</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics">PSNR <span>25.40</span> SSIM <span>0.851</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>26.01</span> SSIM <span>0.860</span></div></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Humanoid DreamDojo Comparison -->
+<section id="humanoid">
+<div class="section-header">
+<h2>Humanoid (DreamDojo) Comparison</h2>
+<div class="divider"></div>
+<p>GR1 humanoid robot — comparing Dense baseline vs. accelerated methods on DreamDojo singleview generation.</p>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Humanoid manipulation task</h3>
+<div><span class="ep-tag">episode_0023</span> <span class="task-label">non_makovian &middot; singleview &middot; iter_50k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dense/humanoid/output/singleview/dreamdojo/non_makovian/iter_000050000/episode_0023/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics">PSNR <span>15.46</span> SSIM <span>0.526</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/humanoid/output/singleview/dreamdojo/non_makovian/iter_000050000/episode_0023/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics">PSNR <span>15.46</span> SSIM <span>0.521</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/humanoid/output/singleview/dreamdojo/non_makovian/iter_000050000/episode_0023/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics">PSNR <span>15.50</span> SSIM <span>0.527</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/humanoid/output/singleview/dreamdojo/non_makovian/iter_000050000/episode_0023/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>15.48</span> SSIM <span>0.527</span></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Humanoid manipulation task</h3>
+<div><span class="ep-tag">episode_0097</span> <span class="task-label">non_makovian &middot; singleview &middot; iter_50k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dense/humanoid/output/singleview/dreamdojo/non_makovian/iter_000050000/episode_0097/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/humanoid/output/singleview/dreamdojo/non_makovian/iter_000050000/episode_0097/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/humanoid/output/singleview/dreamdojo/non_makovian/iter_000050000/episode_0097/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/humanoid/output/singleview/dreamdojo/non_makovian/iter_000050000/episode_0097/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics"></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Humanoid manipulation task</h3>
+<div><span class="ep-tag">episode_0033</span> <span class="task-label">makovian &middot; singleview &middot; iter_50k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dense/humanoid/output/singleview/dreamdojo/makovian/iter_000050000/episode_0033/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/humanoid/output/singleview/dreamdojo/makovian/iter_000050000/episode_0033/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/humanoid/output/singleview/dreamdojo/makovian/iter_000050000/episode_0033/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/humanoid/output/singleview/dreamdojo/makovian/iter_000050000/episode_0033/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics"></div></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Bimanual DreamDojo Comparison -->
+<section id="bimanual">
+<div class="section-header">
+<h2>Bimanual (DreamDojo) Comparison</h2>
+<div class="divider"></div>
+<p>Bimanual robot arms — comparing accelerated methods on DreamDojo singleview generation (non-Markovian).</p>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Bimanual manipulation task</h3>
+<div><span class="ep-tag">episode_0023</span> <span class="task-label">non_makovian &middot; singleview &middot; iter_70k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0023/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics">PSNR <span>18.33</span> SSIM <span>0.714</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0023/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics">PSNR <span>18.71</span> SSIM <span>0.716</span></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0023/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>18.65</span> SSIM <span>0.719</span></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Bimanual manipulation task</h3>
+<div><span class="ep-tag">episode_0055</span> <span class="task-label">non_makovian &middot; singleview &middot; iter_70k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0055/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0055/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0055/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics"></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Bimanual manipulation task</h3>
+<div><span class="ep-tag">episode_0097</span> <span class="task-label">non_makovian &middot; singleview &middot; iter_70k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/worldcache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0097/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/dicache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0097/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video controls muted preload="none"><source src="videos/fastercache/bimanual/output/singleview/dreamdojo/non_makovian/iter_000070000/episode_0097/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics"></div></div>
+</div>
+</div>
+</div>
+</section>
+
+<footer>
+<p>Video World Model Inference Acceleration Benchmark &middot; CAIR Program 2026</p>
+<p style="margin-top:.4rem">Le Thien Doanh &middot; PI: Dr. Nguyen Ho Minh Duy</p>
+</footer>
+
+<script>
+document.querySelectorAll('.comparison-block').forEach((block, i) => {
+  block.style.animation = `fadeIn .5s ease ${i * 0.1}s forwards`;
+  block.style.opacity = '0';
+});
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) { e.target.style.opacity='1'; e.target.style.animation='fadeIn .4s ease forwards'; obs.unobserve(e.target); }});
+}, {threshold:.1});
+document.querySelectorAll('.comparison-block,.stat-card').forEach(el => obs.observe(el));
+
+// Nav highlight
+const sections = document.querySelectorAll('section');
+const navLinks = document.querySelectorAll('nav .nav-links a');
+window.addEventListener('scroll', () => {
+  let cur='';
+  sections.forEach(s => { if(scrollY >= s.offsetTop - 100) cur = s.id; });
+  navLinks.forEach(l => { l.style.color = l.getAttribute('href')==='#'+cur ? 'var(--text-primary)':''; });
+});
+
+// Play all videos in a comparison when one plays
+document.querySelectorAll('.comparison-block').forEach(block => {
+  const videos = block.querySelectorAll('video');
+  videos.forEach(v => {
+    v.addEventListener('play', () => {
+      videos.forEach(other => { if(other !== v && other.paused) other.play(); });
+    });
+    v.addEventListener('pause', () => {
+      videos.forEach(other => { if(other !== v && !other.paused) other.pause(); });
+    });
+    v.addEventListener('seeked', () => {
+      videos.forEach(other => { if(other !== v) other.currentTime = v.currentTime; });
+    });
+  });
+});
+</script>
+</body>
+</html>
