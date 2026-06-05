@@ -124,7 +124,8 @@ nav .nav-links{display:none}
 <a href="#methods">Methods</a>
 <a href="#finetuning">Fine-tuning</a>
 <a href="#single-arm">Single-Arm</a>
-<a href="#humanoid">Humanoid</a>
+<a href="#humanoid-sparse">Humanoid (Sparse)</a>
+<a href="#humanoid">Humanoid (Cache)</a>
 <a href="#bimanual">Bimanual</a>
 </div>
 </div>
@@ -456,6 +457,115 @@ nav .nav-links{display:none}
 <div class="comparison-cell">
 <video autoplay loop muted playsinline preload="metadata"><source src="videos/itm/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
 <div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#f87171"></div>ITM</div><div class="metrics"></div></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- Humanoid DreamGen Sparse Attention Comparison -->
+<section id="humanoid-sparse">
+<div class="section-header">
+<h2>Humanoid (DreamGen) — Sparse Attention</h2>
+<div class="divider"></div>
+<p>GR1 humanoid robot — comparing Dense baseline vs. Sparse Attention methods (PISA, Radial, SVG1) on DreamGen singleview generation.</p>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Pick up the yellow starfruit and place on wooden shelf</h3>
+<div><span class="ep-tag">episode_000200</span> <span class="task-label">makovian &middot; singleview &middot; iter_90k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/dense/humanoid/output/singleview/dreamgen/makovian/episode_000200/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/pisa/humanoid/output/singleview/dreamgen/makovian/episode_000200/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#8b5cf6"></div>PISA</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/radial/humanoid/output/singleview/dreamgen/makovian/episode_000200/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#ec4899"></div>Radial</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/svg1/humanoid/output/singleview/dreamgen/makovian/episode_000200/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#06b6d4"></div>SVG1</div><div class="metrics"></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Pick up the green bok choy from the table</h3>
+<div><span class="ep-tag">episode_000829</span> <span class="task-label">makovian &middot; singleview &middot; iter_90k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/dense/humanoid/output/singleview/dreamgen/makovian/episode_000829/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/pisa/humanoid/output/singleview/dreamgen/makovian/episode_000829/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#8b5cf6"></div>PISA</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/radial/humanoid/output/singleview/dreamgen/makovian/episode_000829/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#ec4899"></div>Radial</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/svg1/humanoid/output/singleview/dreamgen/makovian/episode_000829/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#06b6d4"></div>SVG1</div><div class="metrics"></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Pick up a potato and place into the basket</h3>
+<div><span class="ep-tag">episode_000880</span> <span class="task-label">makovian &middot; singleview &middot; iter_90k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/dense/humanoid/output/singleview/dreamgen/makovian/episode_000880/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/pisa/humanoid/output/singleview/dreamgen/makovian/episode_000880/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#8b5cf6"></div>PISA</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/radial/humanoid/output/singleview/dreamgen/makovian/episode_000880/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#ec4899"></div>Radial</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/svg1/humanoid/output/singleview/dreamgen/makovian/episode_000880/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#06b6d4"></div>SVG1</div><div class="metrics"></div></div>
+</div>
+</div>
+</div>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Pick up a red apple and place on metal rack</h3>
+<div><span class="ep-tag">episode_001055</span> <span class="task-label">makovian &middot; singleview &middot; iter_90k</span></div>
+</div>
+<div class="comparison-grid">
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/dense/humanoid/output/singleview/dreamgen/makovian/episode_001055/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/pisa/humanoid/output/singleview/dreamgen/makovian/episode_001055/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#8b5cf6"></div>PISA</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/radial/humanoid/output/singleview/dreamgen/makovian/episode_001055/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#ec4899"></div>Radial</div><div class="metrics"></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/svg1/humanoid/output/singleview/dreamgen/makovian/episode_001055/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#06b6d4"></div>SVG1</div><div class="metrics"></div></div>
 </div>
 </div>
 </div>
