@@ -301,8 +301,11 @@ nav .nav-links{display:none}
 <div class="section-header">
 <h2>Single-Arm (CtrlWorld) Comparison</h2>
 <div class="divider"></div>
-<p>Same episode, same model (CtrlWorld) — comparing Dense baseline vs. accelerated inference methods on DROID dataset.</p>
+<p>Same episode, same model (CtrlWorld) — comparing methods within the same category on DROID dataset.</p>
 </div>
+
+<!-- Cache Strategy -->
+<h3 style="font-size:1.1rem;color:var(--green);margin:2rem 0 1rem;padding-left:.75rem;border-left:3px solid var(--green)">Cache Strategy</h3>
 
 <div class="comparison-block">
 <div class="comparison-header">
@@ -325,14 +328,6 @@ nav .nav-links{display:none}
 <div class="comparison-cell">
 <video autoplay loop muted playsinline preload="metadata"><source src="videos/fastercache/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
 <div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>21.18</span> SSIM <span>0.778</span></div></div>
-</div>
-<div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/sito/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
-<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#fbbf24"></div>SiTo</div><div class="metrics"></div></div>
-</div>
-<div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/itm/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
-<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#f87171"></div>ITM</div><div class="metrics"></div></div>
 </div>
 </div>
 </div>
@@ -359,12 +354,28 @@ nav .nav-links{display:none}
 <video autoplay loop muted playsinline preload="metadata"><source src="videos/fastercache/single_arm/output/multiview/ctrlworld/makovian/episode_000397/full_pred.mp4" type="video/mp4"></video>
 <div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>24.93</span> SSIM <span>0.901</span></div></div>
 </div>
+</div>
+</div>
+
+<!-- Token Pruning / Merging -->
+<h3 style="font-size:1.1rem;color:#f59e0b;margin:2.5rem 0 1rem;padding-left:.75rem;border-left:3px solid #f59e0b">Token Pruning / Merging</h3>
+
+<div class="comparison-block">
+<div class="comparison-header">
+<h3>Put the orange marker inside the white mug</h3>
+<div><span class="ep-tag">episode_000255</span> <span class="task-label">makovian &middot; multiview &middot; 5fps</span></div>
+</div>
+<div class="comparison-grid">
 <div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/sito/single_arm/output/multiview/ctrlworld/makovian/episode_000397/full_pred.mp4" type="video/mp4"></video>
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/dense/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
+<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics">PSNR <span>20.72</span> SSIM <span>0.770</span></div></div>
+</div>
+<div class="comparison-cell">
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/sito/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
 <div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#fbbf24"></div>SiTo</div><div class="metrics"></div></div>
 </div>
 <div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/itm/single_arm/output/multiview/ctrlworld/makovian/episode_000397/full_pred.mp4" type="video/mp4"></video>
+<video autoplay loop muted playsinline preload="metadata"><source src="videos/itm/single_arm/output/multiview/ctrlworld/makovian/episode_000255/full_pred.mp4" type="video/mp4"></video>
 <div class="cell-info"><div class="method-name"><div class="method-dot" style="background:#f87171"></div>ITM</div><div class="metrics"></div></div>
 </div>
 </div>
@@ -379,18 +390,6 @@ nav .nav-links{display:none}
 <div class="comparison-cell">
 <video autoplay loop muted playsinline preload="metadata"><source src="videos/dense/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
 <div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics">PSNR <span>26.52</span> SSIM <span>0.862</span></div></div>
-</div>
-<div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/worldcache/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
-<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics">PSNR <span>24.55</span> SSIM <span>0.843</span></div></div>
-</div>
-<div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/dicache/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
-<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics">PSNR <span>22.29</span> SSIM <span>0.801</span></div></div>
-</div>
-<div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/fastercache/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
-<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>26.77</span> SSIM <span>0.866</span></div></div>
 </div>
 <div class="comparison-cell">
 <video autoplay loop muted playsinline preload="metadata"><source src="videos/sito/single_arm/output/multiview/ctrlworld/makovian/episode_000855/full_pred.mp4" type="video/mp4"></video>
@@ -412,18 +411,6 @@ nav .nav-links{display:none}
 <div class="comparison-cell">
 <video autoplay loop muted playsinline preload="metadata"><source src="videos/dense/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
 <div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--accent-light)"></div>Dense</div><div class="metrics">PSNR <span>25.38</span> SSIM <span>0.856</span></div></div>
-</div>
-<div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/worldcache/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
-<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--green)"></div>WorldCache</div><div class="metrics">PSNR <span>23.56</span> SSIM <span>0.805</span></div></div>
-</div>
-<div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/dicache/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
-<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--orange)"></div>DiCache</div><div class="metrics">PSNR <span>25.40</span> SSIM <span>0.851</span></div></div>
-</div>
-<div class="comparison-cell">
-<video autoplay loop muted playsinline preload="metadata"><source src="videos/fastercache/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
-<div class="cell-info"><div class="method-name"><div class="method-dot" style="background:var(--cyan)"></div>FasterCache</div><div class="metrics">PSNR <span>26.01</span> SSIM <span>0.860</span></div></div>
 </div>
 <div class="comparison-cell">
 <video autoplay loop muted playsinline preload="metadata"><source src="videos/sito/single_arm/output/multiview/ctrlworld/makovian/episode_000903/full_pred.mp4" type="video/mp4"></video>
