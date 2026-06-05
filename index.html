@@ -266,6 +266,36 @@ nav .nav-links{display:none}
 </div>
 </section>
 
+<!-- Evaluation Gap: Metrics vs. Robotics Needs -->
+<section id="eval-gap">
+<div class="section-header">
+<h2>The Evaluation Gap</h2>
+<div class="divider"></div>
+<p>Standard video generation metrics miss what matters most for robotics applications.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start">
+<div style="background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius);padding:1.5rem">
+<h3 style="font-size:1rem;color:#991b1b;margin-bottom:1.25rem">What existing works measure</h3>
+<div style="display:flex;flex-direction:column;gap:1rem">
+<div><strong style="color:#dc2626">PSNR / SSIM</strong><br><span style="color:#6b7280;font-size:.9rem">Pixel-level reconstruction — ignores semantic correctness</span></div>
+<div><strong style="color:#dc2626">LPIPS</strong><br><span style="color:#6b7280;font-size:.9rem">Perceptual similarity — still appearance-only</span></div>
+<div><strong style="color:#dc2626">FID / FVD</strong><br><span style="color:#6b7280;font-size:.9rem">Distribution-level quality — no per-sample physics check</span></div>
+<div><strong style="color:#dc2626">IS (Inception Score)</strong><br><span style="color:#6b7280;font-size:.9rem">Image diversity — irrelevant to action fidelity</span></div>
+</div>
+</div>
+<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius);padding:1.5rem">
+<h3 style="font-size:1rem;color:#166534;margin-bottom:1.25rem">What robotics actually needs</h3>
+<div style="display:flex;flex-direction:column;gap:1rem">
+<div><strong style="color:#15803d">Physical Plausibility</strong><br><span style="color:#6b7280;font-size:.9rem">Objects obey gravity, collisions, friction</span></div>
+<div><strong style="color:#15803d">Action Fidelity</strong><br><span style="color:#6b7280;font-size:.9rem">Generated motion matches commanded actions</span></div>
+<div><strong style="color:#15803d">Task Completion</strong><br><span style="color:#6b7280;font-size:.9rem">Can a policy succeed using simulated frames?</span></div>
+<div><strong style="color:#15803d">Temporal Consistency</strong><br><span style="color:#6b7280;font-size:.9rem">No flickering, object permanence, smooth dynamics</span></div>
+<div><strong style="color:#15803d">Contact Accuracy</strong><br><span style="color:#6b7280;font-size:.9rem">Grasp, push, lift events at correct timesteps</span></div>
+</div>
+</div>
+</div>
+</section>
+
 <!-- Fine-tuning Coverage -->
 <section id="finetuning">
 <div class="section-header">
