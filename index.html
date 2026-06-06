@@ -72,7 +72,8 @@ section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
 .comparison-header .task-label{font-size:.85rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
 .comparison-header .ep-tag{padding:.3rem .7rem;border-radius:6px;font-size:.75rem;font-weight:600;background:rgba(79,70,229,0.08);color:var(--accent)}
 
-.comparison-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
+.comparison-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0}
+.comparison-grid.grid-2x2{grid-template-columns:repeat(2,1fr)}
 .comparison-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:0}
 .comparison-cell:last-child{border-right:none}
 .comparison-cell video{width:100%;aspect-ratio:16/10;object-fit:contain;background:#0a0a0f;display:block;cursor:pointer;transition:transform .2s,box-shadow .2s}
@@ -766,6 +767,11 @@ window.addEventListener('scroll', () => {
   let cur='';
   sections.forEach(s => { if(scrollY >= s.offsetTop - 100) cur = s.id; });
   navLinks.forEach(l => { l.style.color = l.getAttribute('href')==='#'+cur ? 'var(--text-primary)':''; });
+});
+
+// Auto 2x2 layout for grids with 4 videos
+document.querySelectorAll('.comparison-grid').forEach(grid => {
+  if (grid.children.length >= 4) grid.classList.add('grid-2x2');
 });
 
 // Play all videos in a comparison when one plays
