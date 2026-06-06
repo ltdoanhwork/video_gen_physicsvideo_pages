@@ -786,8 +786,8 @@ window.addEventListener('scroll', () => {
   navLinks.forEach(l => { l.style.color = l.getAttribute('href')==='#'+cur ? 'var(--text-primary)':''; });
 });
 
-// Auto 2x2 layout for grids with 4 videos
-document.querySelectorAll('.comparison-grid').forEach(grid => {
+// Auto 2x2 layout only for Single-Arm CtrlWorld (4 videos)
+document.querySelectorAll('#single-arm .comparison-grid').forEach(grid => {
   if (grid.children.length >= 4) grid.classList.add('grid-2x2');
 });
 
