@@ -75,7 +75,8 @@ section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
 .comparison-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
 .comparison-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:0}
 .comparison-cell:last-child{border-right:none}
-.comparison-cell video{width:100%;aspect-ratio:16/10;object-fit:contain;background:#0a0a0f;display:block;cursor:pointer}
+.comparison-cell video{width:100%;aspect-ratio:16/10;object-fit:contain;background:#0a0a0f;display:block;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.comparison-cell video:hover{transform:scale(1.02);box-shadow:0 4px 16px rgba(79,70,229,.15)}
 .comparison-cell .cell-info{padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between}
 .comparison-cell .method-name{font-size:.9rem;font-weight:600;display:flex;align-items:center;gap:.5rem;color:var(--text-primary)}
 .comparison-cell .method-dot{width:10px;height:10px;border-radius:50%}
@@ -115,12 +116,19 @@ nav .nav-links{display:none}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
 /* Video Lightbox */
-.video-lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:2rem;cursor:pointer}
-.video-lightbox.active{display:flex}
-.video-lightbox video{max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.video-lightbox .lb-info{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);color:#fff;font-size:.9rem;background:rgba(0,0,0,.6);padding:.5rem 1.25rem;border-radius:8px;font-weight:500}
-.video-lightbox .lb-close{position:absolute;top:1.5rem;right:1.5rem;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
-.video-lightbox .lb-close:hover{background:rgba(255,255,255,.3)}
+.video-lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0);backdrop-filter:blur(0px);align-items:center;justify-content:center;padding:2rem;cursor:pointer;transition:background .3s,backdrop-filter .3s}
+.video-lightbox.active{display:flex;animation:lbFadeIn .3s forwards}
+.video-lightbox.closing{animation:lbFadeOut .25s forwards}
+.video-lightbox video{max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5);transform:scale(.85);opacity:0;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .3s}
+.video-lightbox.active video{transform:scale(1);opacity:1}
+.video-lightbox.closing video{transform:scale(.85);opacity:0}
+.video-lightbox .lb-info{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%) translateY(10px);color:#fff;font-size:.9rem;background:rgba(0,0,0,.6);padding:.5rem 1.25rem;border-radius:8px;font-weight:500;opacity:0;transition:opacity .3s .15s,transform .3s .15s}
+.video-lightbox.active .lb-info{opacity:1;transform:translateX(-50%) translateY(0)}
+.video-lightbox .lb-close{position:absolute;top:1.5rem;right:1.5rem;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s;opacity:0;transform:scale(.8)}
+.video-lightbox.active .lb-close{opacity:1;transform:scale(1);transition:background .2s,transform .3s .1s,opacity .3s .1s}
+.video-lightbox .lb-close:hover{background:rgba(255,255,255,.3);transform:scale(1.1)}
+@keyframes lbFadeIn{from{background:rgba(0,0,0,0);backdrop-filter:blur(0px)}to{background:rgba(0,0,0,.85);backdrop-filter:blur(4px)}}
+@keyframes lbFadeOut{from{background:rgba(0,0,0,.85);backdrop-filter:blur(4px)}to{background:rgba(0,0,0,0);backdrop-filter:blur(0px)}}
 </style>
 </head>
 <body>
@@ -797,17 +805,23 @@ document.querySelectorAll('.comparison-cell video').forEach(v => {
 
 lightbox.addEventListener('click', (e) => {
   if (e.target === lightbox || e.target.classList.contains('lb-close')) {
-    lightbox.classList.remove('active');
-    lbVideo.pause();
-    lbVideo.src = '';
+    lightbox.classList.add('closing');
+    setTimeout(() => {
+      lightbox.classList.remove('active', 'closing');
+      lbVideo.pause();
+      lbVideo.src = '';
+    }, 250);
   }
 });
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-    lightbox.classList.remove('active');
-    lbVideo.pause();
-    lbVideo.src = '';
+    lightbox.classList.add('closing');
+    setTimeout(() => {
+      lightbox.classList.remove('active', 'closing');
+      lbVideo.pause();
+      lbVideo.src = '';
+    }, 250);
   }
 });
 </script>
