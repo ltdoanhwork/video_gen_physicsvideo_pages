@@ -72,10 +72,10 @@ section{padding:5rem 2rem;max-width:1400px;margin:0 auto}
 .comparison-header .task-label{font-size:.85rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
 .comparison-header .ep-tag{padding:.3rem .7rem;border-radius:6px;font-size:.75rem;font-weight:600;background:rgba(79,70,229,0.08);color:var(--accent)}
 
-.comparison-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0}
+.comparison-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0}
 .comparison-cell{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:0}
 .comparison-cell:last-child{border-right:none}
-.comparison-cell video{width:100%;aspect-ratio:16/10;object-fit:contain;background:#0a0a0f;display:block}
+.comparison-cell video{width:100%;aspect-ratio:16/10;object-fit:contain;background:#0a0a0f;display:block;cursor:pointer}
 .comparison-cell .cell-info{padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between}
 .comparison-cell .method-name{font-size:.9rem;font-weight:600;display:flex;align-items:center;gap:.5rem;color:var(--text-primary)}
 .comparison-cell .method-dot{width:10px;height:10px;border-radius:50%}
@@ -113,6 +113,14 @@ nav .nav-links{display:none}
 .stats{grid-template-columns:1fr 1fr}
 }
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Video Lightbox */
+.video-lightbox{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:2rem;cursor:pointer}
+.video-lightbox.active{display:flex}
+.video-lightbox video{max-width:90vw;max-height:85vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.video-lightbox .lb-info{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);color:#fff;font-size:.9rem;background:rgba(0,0,0,.6);padding:.5rem 1.25rem;border-radius:8px;font-weight:500}
+.video-lightbox .lb-close{position:absolute;top:1.5rem;right:1.5rem;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.video-lightbox .lb-close:hover{background:rgba(255,255,255,.3)}
 </style>
 </head>
 <body>
@@ -148,8 +156,9 @@ nav .nav-links{display:none}
 <!-- Demo Video -->
 <section id="demo-video" style="padding:2rem 2rem 0">
 <div style="max-width:960px;margin:0 auto;border-radius:var(--radius);overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)">
-<iframe src="https://drive.google.com/file/d/1O8yIxOaBfs7X2DZLJY1d6wcQj9ahbjZ1/preview" width="100%" height="540" style="border:none;display:block" allow="autoplay" allowfullscreen></iframe>
+<iframe src="https://drive.google.com/file/d/1O8yIxOaBfs7X2DZLJY1d6wcQj9ahbjZ1/preview" width="100%" height="540" style="border:none;display:block" allow="autoplay" allowfullscreen loading="lazy"></iframe>
 </div>
+<p style="text-align:center;color:var(--text-muted);font-size:.85rem;margin-top:.75rem">Project overview demo — requires Google Drive access</p>
 </section>
 
 <section id="overview">
@@ -160,7 +169,7 @@ nav .nav-links{display:none}
 </div>
 <div class="stats">
 <div class="stat-card"><div class="value" style="color:var(--accent-light)">~2-5 min</div><div class="label">Per episode (50-80 frames)</div></div>
-<div class="stat-card"><div class="value" style="color:var(--green)">20-100x</div><div class="label">Slower than real-time</div></div>
+<div class="stat-card"><div class="value" style="color:var(--green)">3-5x</div><div class="label">Slower than real-time</div></div>
 <div class="stat-card"><div class="value" style="color:var(--cyan)">9</div><div class="label">Methods compared</div></div>
 <div class="stat-card"><div class="value" style="color:var(--orange)">3</div><div class="label">Robot embodiments</div></div>
 </div>
@@ -765,6 +774,41 @@ document.querySelectorAll('.comparison-block').forEach(block => {
       videos.forEach(other => { if(other !== v) other.currentTime = v.currentTime; });
     });
   });
+});
+
+// Video Lightbox
+const lightbox = document.createElement('div');
+lightbox.className = 'video-lightbox';
+lightbox.innerHTML = '<button class="lb-close">&times;</button><video autoplay loop muted playsinline></video><div class="lb-info"></div>';
+document.body.appendChild(lightbox);
+const lbVideo = lightbox.querySelector('video');
+const lbInfo = lightbox.querySelector('.lb-info');
+
+document.querySelectorAll('.comparison-cell video').forEach(v => {
+  v.addEventListener('click', () => {
+    const src = v.querySelector('source')?.src || v.src;
+    lbVideo.src = src;
+    const methodName = v.closest('.comparison-cell')?.querySelector('.method-name')?.textContent?.trim() || '';
+    lbInfo.textContent = methodName;
+    lightbox.classList.add('active');
+    lbVideo.play();
+  });
+});
+
+lightbox.addEventListener('click', (e) => {
+  if (e.target === lightbox || e.target.classList.contains('lb-close')) {
+    lightbox.classList.remove('active');
+    lbVideo.pause();
+    lbVideo.src = '';
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+    lightbox.classList.remove('active');
+    lbVideo.pause();
+    lbVideo.src = '';
+  }
 });
 </script>
 </body>
